@@ -1,0 +1,7 @@
+*.class
+src/me/maiome/jconduit/tests/*
+
+# Package Files #
+*.jar
+*.war
+*.ear

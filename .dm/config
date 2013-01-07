@@ -1,0 +1,41 @@
+declare -a upstream
+
+source ${dmcore}/config/global
+
+# ==============================================================================================================
+# compiler configurable options
+
+name="jConduit"
+basedir="/home/pirogoeth/jConduit"
+incdir="${basedir}/inc" # you shouldn't need to change this
+jvmv="6" # default uses JDK 6, you may not need to change this. check your config/global for details
+javac_includes=""
+javac_src="src/me/maiome/jconduit/*/*.java"
+
+# extra variables used during compile, may not always be used.
+plugin_datafile=""
+
+# upstream resources to run compile first to get an UPDATED resource.
+# this will read a resource list located at ~/.dm/resources
+
+upstream=(  )
+
+# compiler configuration ENDS
+# ==============================================================================================================
+# dependency configuration options
+
+# this is the source of your dm deps repo.
+depsource="http://maio.me/dm"
+# this shouldnt change.
+manifest="manifest.txt"
+# this is the command that the build system will run to perform tests. if any tests fail,
+# the build will stop before packaging
+testcmd="java me/maiome/conduit/ConduitClientTest"
+
+# dependency configuration ENDS
+# ==============================================================================================================
+# dm wrapper options
+
+dm_allowed_actions=( "compile" )
+
+# dm wrapper options END
