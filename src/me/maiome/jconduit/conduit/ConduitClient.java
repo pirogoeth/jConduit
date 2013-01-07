@@ -33,6 +33,11 @@ public class ConduitClient {
     private boolean authenticated;
 
     /**
+     * Holds the previously retrieved response object.
+     */
+    private JSONObject previousResponse = new JSONObject();
+
+    /**
      * Defaults constructor.
      */
     private ConduitClient() {
@@ -76,10 +81,16 @@ public class ConduitClient {
         argMap.put("host", apiURL);
         argMap.put("token", token);
 
-        ConduitClient client = new ConduitClient(apiURL);
-        JSONObject response = client.call(
-            "conduit.getcertificate",
-            argMap);
+        ConduitClient client;
+        JSONObject response = new JSONObject();
+
+        try {
+            client = new ConduitClient(apiURL);
+            response = client.call("conduit.getcertificate", argMap);
+        } catch (ConduitException e) {
+            e.printStackTrace();
+            return new HashMap<String, Object>();
+        }
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
@@ -116,11 +127,12 @@ public class ConduitClient {
         handshakeArgs.put("authSignature", authSignature);
         handshakeArgs.put("host", apiURL);
 
-        JSONObject response = client.call("conduit.connect", handshakeArgs);
-
+        JSONObject response;
         try {
-            return new ConduitClient(apiURL, response.getJSONObject("result").getString("sessionKey"), response.getJSONObject("result").getInt("connectionID"));
+            response = client.call("conduit.connect", handshakeArgs);
+            return new ConduitClient(apiURL, response.getString("sessionKey"), response.getInt("connectionID"));
         } catch (java.lang.Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -148,6 +160,13 @@ public class ConduitClient {
         } catch (java.lang.Exception e) {
             return "";
         }
+    }
+
+    /**
+     * Returns the previously retrieved result object.
+     */
+    public JSONObject getPreviousResponse() {
+        return this.previousResponse;
     }
 
     /**
@@ -183,12 +202,14 @@ public class ConduitClient {
             out.close();
 
             String data = this.readAllFromURLConnection(connection);
-            JSONObject respObj = new JSONObject(data);
+            JSONObject respObj = this.previousResponse = new JSONObject(data);
             JSONObject resultObj = respObj.getJSONObject("result");
             if (!(respObj.isNull("error_code"))) {
                 throw new ConduitException(respObj.getString("error_code"), respObj.getString("error_info"));
             }
             return resultObj;
+        } catch (ConduitException e) {
+            throw e;
         } catch (java.lang.Exception e) {
             return new JSONObject();
         }
