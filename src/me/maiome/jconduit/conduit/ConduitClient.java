@@ -151,13 +151,6 @@ public class ConduitClient {
     }
 
     /**
-     * Lets us know if we are connected.
-     */
-    public boolean isConnected() {
-        return this.connected;
-    }
-
-    /**
      * Runs a conduit call with the given method and arguments. Will attach session information if found.
      */
     public JSONObject call(String method, Map<String, Object> argMap) throws ConduitException {
