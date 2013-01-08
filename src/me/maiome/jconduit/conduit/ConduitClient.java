@@ -48,7 +48,7 @@ public class ConduitClient {
      * Constructor for an unauthenticated conduit client.
      */
     private ConduitClient(final String apiURL) {
-        this(apiURL, null, -1);
+        this(apiURL, "", -1);
     }
 
     /**
