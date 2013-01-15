@@ -203,11 +203,10 @@ public class ConduitClient {
 
             String data = this.readAllFromURLConnection(connection);
             JSONObject respObj = this.previousResponse = new JSONObject(data);
-            JSONObject resultObj = respObj.getJSONObject("result");
-            if (!(respObj.isNull("error_code"))) {
+            if (respObj.isNull("result") && !(respObj.isNull("error_code"))) {
                 throw new ConduitException(respObj.getString("error_code"), respObj.getString("error_info"));
             }
-            return resultObj;
+            return respObj.getJSONObject("result");
         } catch (ConduitException e) {
             throw e;
         } catch (java.lang.Exception e) {
