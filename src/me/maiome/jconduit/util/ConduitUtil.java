@@ -1,5 +1,6 @@
 package me.maiome.jconduit.util;
 
+import java.io.*;
 import java.util.*;
 
 import me.maiome.jconduit.conduit.*;
@@ -21,6 +22,16 @@ public class ConduitUtil {
      * The certificate that the client with authenticate with.
      */
     private static String certificate = "";
+
+    /**
+     * Enumerates all Phid types that we will deal with.
+     */
+    public static class PhidTypes {
+
+        static String USER = "USER";
+        static String FILE = "FILE";
+
+    }
 
     /**
      * Sets the url that many of these utility methods will use.
@@ -117,6 +128,9 @@ public class ConduitUtil {
      * @returns String username
      */
     public static String resolvePhabricatorUserPHID(String PHID) {
+        if (!(getPHIDTag(PHID).equals(PhidTypes.USER))) {
+            return ""; // not a UserPHID
+        }
         try {
             ConduitClient client = ConduitClient.fromCertificate(getUsername(), getCertificate(), getApiUrl());
             List<String> phidList = new ArrayList<String>();
@@ -148,6 +162,31 @@ public class ConduitUtil {
         } catch (java.lang.Exception e) {
             e.printStackTrace();
             return new ArrayList<String>();
+        }
+    }
+
+    /**
+     * Downloads the specified file from Phabricator.
+     *
+     * @params String Phid
+     * @params String saveName
+     * @returns File downloadedFile
+     */
+    public static File downloadFile(String phid, String saveName) {
+        if (!(getPHIDTag(phid).equals(PhidTypes.FILE))) {
+            return new File(saveName);
+        }
+        try {
+            ConduitClient client = ConduitClient.fromCertificate(getUsername(), getCertificate(), getApiUrl());
+            Map<String, Object> argMap = new HashMap<String, Object>();
+            argMap.put("phid", phid);
+            JSONObject respObj = client.call("file.download", argMap);
+            respObj = client.getPreviousResponse();
+            String base64EncData = respObj.getString("result");
+            Base64.decodeToFile(base64EncData, saveName);
+            return new File(saveName);
+        } catch (java.lang.Exception e) {
+            return new File(saveName);
         }
     }
 }
