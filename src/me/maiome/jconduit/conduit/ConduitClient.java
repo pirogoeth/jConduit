@@ -39,6 +39,8 @@ public class ConduitClient {
 
     /**
      * Defaults constructor.
+     * 
+     * @params none
      */
     private ConduitClient() {
         this("http://phabricator.maio.me/api", "", -1);
@@ -46,6 +48,8 @@ public class ConduitClient {
 
     /**
      * Constructor for an unauthenticated conduit client.
+     * 
+     * @params String apiURL
      */
     private ConduitClient(final String apiURL) {
         this(apiURL, "", -1);
@@ -53,6 +57,8 @@ public class ConduitClient {
 
     /**
      * Constructor for a fully authenticated conduit client.
+     * 
+     * @params String apiURL, String sessionKey, int connectionID
      */
     private ConduitClient(final String apiURL, final String sessionKey, final int connectionID) {
         this.apiURL = apiURL;
@@ -64,6 +70,9 @@ public class ConduitClient {
 
     /**
      * Maps byte arrays into a String; useful for making SHA hashes from MessageDigest more friendly.
+     * 
+     * @params byte[] bytes
+     * @returns String
      */
     public static String byteMap(byte[] bytes) {
         StringBuilder data = new StringBuilder();
@@ -75,6 +84,10 @@ public class ConduitClient {
 
     /**
      * Retrieves the user's certificate from the conduit API, given the user's token.
+     * Returns a certificate map that is usable by #fromCertificateMap()
+     * 
+     * @params String token, String apiURL
+     * @returns Map<String, Object>
      */
     public static Map<String, Object> getCertificate(String token, String apiURL) {
         Map<String, Object> argMap = new HashMap<String, Object>();
@@ -106,6 +119,9 @@ public class ConduitClient {
 
     /**
      * Creates an authenticated conduit client with a username and certificate.
+     * 
+     * @params String username, String certificate, String apiURL
+     * @returns ConduitClient
      */
     public static ConduitClient fromCertificate(final String username, final String certificate, final String apiURL) {
         ConduitClient client = new ConduitClient(apiURL);
@@ -116,7 +132,7 @@ public class ConduitClient {
         try {
             MessageDigest tokenDigest = MessageDigest.getInstance("SHA-1");
             tokenDigest.update((Long.toString(time) + certificate).getBytes());
-            authSignature = byteMap(tokenDigest.digest());
+            authSignature = ConduitClient.byteMap(tokenDigest.digest());
         } catch (java.lang.Exception e) { }
 
         Map<String, Object> handshakeArgs = new HashMap<String, Object>();
@@ -128,6 +144,7 @@ public class ConduitClient {
         handshakeArgs.put("host", apiURL);
 
         JSONObject response;
+
         try {
             response = client.call("conduit.connect", handshakeArgs);
             return new ConduitClient(apiURL, response.getString("sessionKey"), response.getInt("connectionID"));
@@ -139,6 +156,9 @@ public class ConduitClient {
 
     /**
      * Creates a conduit client from the information in a certificate map.
+     * 
+     * @params Map<String, Object> certificateMap, String apiURL
+     * @returns ConduitClient
      */
     public static ConduitClient fromCertificateMap(final Map<String, Object> certificateMap, final String apiURL) {
         return fromCertificate((String) certificateMap.get("username"), (String) certificateMap.get("certificate"), apiURL);
@@ -146,6 +166,9 @@ public class ConduitClient {
 
     /**
      * Reads all data from a URLConnection and returns it as a String.
+     * 
+     * @params URLConnection uc
+     * @returns String
      */
     private String readAllFromURLConnection(URLConnection uc) {
         try {
@@ -164,6 +187,9 @@ public class ConduitClient {
 
     /**
      * Returns the previously retrieved result object.
+     * 
+     * @params none
+     * @returns JSONObject
      */
     public JSONObject getPreviousResponse() {
         return this.previousResponse;
@@ -171,6 +197,9 @@ public class ConduitClient {
 
     /**
      * Runs a conduit call with the given method and arguments. Will attach session information if found.
+     * 
+     * @params String method, Map<String, Object> argumentMap
+     * @returns JSONObject
      */
     public JSONObject call(String method, Map<String, Object> argMap) throws ConduitException {
         if (this.authenticated) {
@@ -179,6 +208,7 @@ public class ConduitClient {
             authMap.put("connectionID", this.connectionID);
             argMap.put("__conduit__", authMap);
         }
+
         JSONObject argObject = new JSONObject(argMap);
 
         try {
@@ -190,6 +220,9 @@ public class ConduitClient {
 
     /**
      * Actual internal call to conduit to send the args and receive the response.
+     * 
+     * @params String method, JSONObject args
+     * @returns JSONObject
      */
     private JSONObject call(String method, JSONObject args) throws ConduitException {
         try {
