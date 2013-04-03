@@ -1,5 +1,6 @@
 *.class
-src/me/maiome/jconduit/tests/*
+# src/me/maiome/jconduit/tests/*
+target/*
 
 # Package Files #
 *.jar
