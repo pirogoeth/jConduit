@@ -17,8 +17,7 @@ public class ConduitClientTest {
     private String certificate = "o3ngxzajwysw4utrjiigpt4ael65jejrsymrlcwjjuwantec3iz4xa7xcnyyh6stvater7sbrudfp5q6h2zcpeoqakectbq6jvu53t6vc7vsaxsg7radyjcoi37eakyztg6mpxosi37upnwzgawx3jiy3wbh2yhbjmpt7pd76oezwsmcnodffei5mld52eesbdnsrd6p5kpysec5gyb273s5dwigikchfz7jx7eighbovjwot7vz6vfus5zqvda";
     private String provisionId = "5jejkfktqkhv4mlqb37a";
     private String provisionPhid = "PHID-PROV-5jejkfktqkhv4mlqb37a";
-    private String resolvePhid = "PHID-USER-957e147c72cc5f1fc255";
-    private String[] resolvePhids = {"PHID-USER-957e147c72cc5f1fc255", "PHID-USER-nstulhan5psvbqhpmhh4"};
+    private String resolvePhid = "PHID-USER-nstulhan5psvbqhpmhh4";
     private String filePhid = "PHID-FILE-l3egvph7n6nxnfqp4rnl";
 
     public ConduitClientTest() {
@@ -110,16 +109,7 @@ public class ConduitClientTest {
         } catch (java.lang.Exception e) {
             System.out.println(" ==> " + e.getMessage());
         }
-        System.out.println(" 5. Trying to resolve some UserPHIDs..");
-        try {
-            List<String> resolvedNames = ConduitUtil.resolvePhabricatorUserPHIDs(this.resolvePhids);
-            for (int i = 0; i < resolvedNames.size(); i++) {
-                System.out.println(" ==> " + this.resolvePhids[i] + " is " + resolvedNames.get(i));
-            }
-        } catch (java.lang.Exception e) {
-            System.out.println(" ==> " + e.getMessage());
-        }
-        System.out.println(" 6. Trying to resolve a bad UserPHID..");
+        System.out.println(" 5. Trying to resolve a bad UserPHID..");
         try {
             String resolvedName = ConduitUtil.resolvePhabricatorUserPHID(this.provisionPhid);
             if (resolvedName.equals("")) {
@@ -130,7 +120,7 @@ public class ConduitClientTest {
         } catch (java.lang.Exception e) {
             System.out.println(" ==> " + e.getMessage());
         }
-        System.out.println(" 7. Trying to download a file..");
+        System.out.println(" 6. Trying to download a file..");
         try {
             File downloadedFile = ConduitUtil.downloadFile(this.filePhid, "/tmp/jConduit-logo.png");
             if (downloadedFile.length() != 253309) {
