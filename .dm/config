@@ -6,9 +6,11 @@ source ${dmcore}/config/global
 # compiler configurable options
 
 name="jConduit"
-basedir="/home/pirogoeth/jConduit"
+basedir="`dirlocate .dm/`/.."
 srcdir="${basedir}/src"
 incdir="${basedir}/inc" # you shouldn't need to change this
+targetdir="${basedir}/target"
+resdir="${basedir}/resources"
 jvmv="6" # default uses JDK 6, you may not need to change this. check your config/global for details
 javac_includes=""
 javac_src="src/me/maiome/jconduit/*/*.java"
@@ -31,7 +33,7 @@ depsource="http://maio.me/dm"
 manifest="manifest.txt"
 # this is the command that the build system will run to perform tests. if any tests fail,
 # the build will stop before packaging
-testcmd="java -cp src/ me/maiome/jconduit/tests/ConduitClientTest"
+testcmd="java -cp ${targetdir} me/maiome/jconduit/tests/ConduitClientTest"
 
 # dependency configuration ENDS
 # ==============================================================================================================
