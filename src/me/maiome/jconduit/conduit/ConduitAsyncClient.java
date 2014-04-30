@@ -8,12 +8,16 @@ public abstract class ConduitAsyncClient extends Thread {
 
     // max number of wait retries; data should be received fairly quickly, so this should be fairly low.
     private static final int MAX_RETRIES = 10;
+
     // delay between attempts to finish call
     private static final int CALL_COMPLETION_DELAY = 500;
+
     // connection lock
     private static final Object threadConnectionLock = new Object();
+
     // our event timer
     private static final Timer callTimer = new Timer("ConduitAsyncClient Call Completion", true);
+
     // connection information
     protected String clientUsername;
     protected String clientCertificate;
@@ -21,8 +25,10 @@ public abstract class ConduitAsyncClient extends Thread {
     protected String method;
     protected Map<String, Object> argMap = new HashMap<String, Object>();
     private boolean ready = false;
+
     // conduit client instance
     protected ConduitClient conduitClient;
+
     // async state variables
     private boolean completed = false;
     private JSONObject response = null;
@@ -115,7 +121,7 @@ public abstract class ConduitAsyncClient extends Thread {
         }
         this.conduitClient = ConduitClient.fromCertificate(this.clientUsername, this.clientCertificate, this.clientApiUrl);
         synchronized(threadConnectionLock) {
-            System.out.println("Running overridden start.."); // debug
+            // System.out.println("Running overridden start.."); // debug
             super.start();
             this.scheduleWaitingTask();
         }
@@ -146,7 +152,7 @@ public abstract class ConduitAsyncClient extends Thread {
     }
 
     /**
-     * [ABSTRACT] Conduit call completion callback. Override this to provide a data handler to run after the data is successfully retrieved.
+     * Conduit call completion callback. Override this to provide a data handler to run after the data is successfully retrieved.
      * This *MUST* be overridden.
      *
      * @params none
@@ -155,7 +161,7 @@ public abstract class ConduitAsyncClient extends Thread {
     public abstract void onFetchCompleted();
 
     /**
-     * [ABSTRACT] Conduit call timeout callback. Override this to provide an error handler in the case that the conduit call times out.
+     * Conduit call timeout callback. Override this to provide an error handler in the case that the conduit call times out.
      * This *MUST* be overridden.
      *
      * @params none

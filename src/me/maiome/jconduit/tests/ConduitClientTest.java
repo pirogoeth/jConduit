@@ -15,8 +15,7 @@ public class ConduitClientTest {
     private String apiURL = "http://phabricator.maio.me/api/";
     private String username = "jc-test";
     private String certificate = "o3ngxzajwysw4utrjiigpt4ael65jejrsymrlcwjjuwantec3iz4xa7xcnyyh6stvater7sbrudfp5q6h2zcpeoqakectbq6jvu53t6vc7vsaxsg7radyjcoi37eakyztg6mpxosi37upnwzgawx3jiy3wbh2yhbjmpt7pd76oezwsmcnodffei5mld52eesbdnsrd6p5kpysec5gyb273s5dwigikchfz7jx7eighbovjwot7vz6vfus5zqvda";
-    private String provisionId = "5jejkfktqkhv4mlqb37a";
-    private String provisionPhid = "PHID-PROV-5jejkfktqkhv4mlqb37a";
+
     private String resolvePhid = "PHID-USER-nstulhan5psvbqhpmhh4";
     private String filePhid = "PHID-FILE-l3egvph7n6nxnfqp4rnl";
 
@@ -43,99 +42,68 @@ public class ConduitClientTest {
 
     public void runConduitTests() {
         JSONObject respObj;
-        System.out.println("==================== Running ConduitClient Tests ====================");
+        System.out.println("[ Running ConduitClient Tests ]");
         // Test 1: Ping conduitAPI.
-        System.out.println(" 1. Pinging ConduitAPI...");
+        System.out.println(" [+] Pinging Conduit API...");
         try {
             respObj = this.client.call("conduit.ping", new HashMap<String, Object>());
             respObj = this.client.getPreviousResponse();
-            System.out.println(" => Conduit response: " + respObj.getString("result"));
+            System.out.println("  [*] Conduit response: " + respObj.getString("result"));
         } catch (ConduitException e) {
             e.printStackTrace();
         } catch (java.lang.Exception e) {
             e.printStackTrace();
         }
         // Test 2: fetch userinfo.
-        System.out.println(" 2. Fetching user information...");
+        System.out.println(" [+] Fetching user information...");
         try {
             respObj = this.client.call("user.whoami", new HashMap<String, Object>());
-            System.out.println(" => I am logged in as '" + respObj.getString("userName") + "'.");
-            System.out.println(" => My real name is '" + respObj.getString("realName") + "'.");
+            System.out.println("  [*] I am logged in as '" + respObj.getString("userName") + "'.");
+            System.out.println("  [*] My real name is '" + respObj.getString("realName") + "'.");
         } catch (ConduitException e) {
             e.printStackTrace();
         } catch (java.lang.Exception e) {
             e.printStackTrace();
         }
-        // Test 3: fetch cct provision info. (may not be applicable to all phab. instances)
-        System.out.println(" 3. Contacting provisioning API...");
-        System.out.println(" => Trying to store CID...");
-        try {
-            Map<String, Object> argMap = new HashMap<String, Object>();
-            argMap.put("provision_phid_fragment", this.provisionId);
-            argMap.put("client_id", this.getClientID());
-            respObj = this.client.call("provision.storecid", argMap);
-            try {
-                String result = Boolean.toString(respObj.getBoolean("success"));
-                System.out.println(" ==> API returned: " + result);
-            } catch (java.lang.Exception e) {
-                e.printStackTrace();
-            }
-        } catch (ConduitException e) {
-            System.out.println(" ==> " + e.getMessage());
-        } catch (java.lang.Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(" => Trying to validate provision...");
-        try {
-            Map<String, Object> argMap = new HashMap<String, Object>();
-            argMap.put("provision_phid_fragment", this.provisionId);
-            argMap.put("client_id", this.getClientID());
-            respObj = this.client.call("provision.validate", argMap);
-            try {
-                String result = Boolean.toString(respObj.getBoolean("success"));
-                System.out.println(" ==> API returned: " + result);
-            } catch (java.lang.Exception e) {
-                e.printStackTrace();
-            }
-        } catch (ConduitException e) {
-            System.out.println(" ==> " + e.getMessage());
-        } catch (java.lang.Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(" 4. Trying to resolve a UserPHID..");
+        // Test 3: resolve a user phid.
+        System.out.println(" [+] Trying to resolve a user PHID..");
         try {
             String resolvedName = ConduitUtil.resolvePhabricatorUserPHID(this.resolvePhid);
-            System.out.println(" ==> " + this.resolvePhid + " is " + resolvedName + ".");
+            System.out.println("  [*] " + this.resolvePhid + " is " + resolvedName + ".");
         } catch (java.lang.Exception e) {
-            System.out.println(" ==> " + e.getMessage());
+            System.out.println("  [-] " + e.getMessage());
         }
-        System.out.println(" 5. Trying to resolve a bad UserPHID..");
+        // Test 4: test a "bad" user phid.
+        System.out.println(" [+] Trying to resolve a bad user PHID..");
         try {
-            String resolvedName = ConduitUtil.resolvePhabricatorUserPHID(this.provisionPhid);
+            String resolvedName = ConduitUtil.resolvePhabricatorUserPHID("PHID-USER-1234567890abcdef");
             if (resolvedName.equals("")) {
-                System.out.println(" ==> Pass!");
+                System.out.println("  [*] Pass!");
             } else {
-                System.out.println(" ==> Fail!");
+                System.out.println("  [-] Fail!");
             }
         } catch (java.lang.Exception e) {
-            System.out.println(" ==> " + e.getMessage());
+            System.out.println("  [-] " + e.getMessage());
         }
-        System.out.println(" 6. Trying to download a file..");
+        // Test 5: download a file.
+        System.out.println(" [+] Trying to download a file..");
         try {
             File downloadedFile = ConduitUtil.downloadFile(this.filePhid, "/tmp/jConduit-logo.png");
             if (downloadedFile.length() != 253309) {
-                System.out.println(" => Fail!");
+                System.out.println("  [-] Fail!");
             } else {
-                System.out.println(" => Success!");
+                System.out.println("  [*] Success!");
             }
             downloadedFile.deleteOnExit();
         } catch (java.lang.Exception e) {
-            System.out.println(" ==> " + e.getMessage());
+            System.out.println("  [-] " + e.getMessage());
         }
     }
 
     public static void main(String[] args) {
+        ConduitClientAsyncTest ccat = new ConduitClientAsyncTest();
         ConduitClientTest cct = new ConduitClientTest();
+        ccat.runConduitAsyncTests();
         cct.runConduitTests();
     }
 }

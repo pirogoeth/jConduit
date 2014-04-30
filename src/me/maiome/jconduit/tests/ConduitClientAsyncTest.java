@@ -24,8 +24,8 @@ public class ConduitClientAsyncTest {
             public void onFetchCompleted() {
                 JSONObject respObj = getResponse();
                 try {
-                    System.out.println(" => I am logged in as '" + respObj.getString("userName") + "'.");
-                    System.out.println(" => My real name is '" + respObj.getString("realName") + "'.");
+                    System.out.println(" [*] I am logged in as '" + respObj.getString("userName") + "'.");
+                    System.out.println(" [*] My real name is '" + respObj.getString("realName") + "'.");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -33,15 +33,16 @@ public class ConduitClientAsyncTest {
 
             @Override
             public void onFetchTimeout() {
-                System.out.println("Fetch timed out!");
+                System.out.println(" [-] Fetch timed out!");
             }
         };
         this.client.setConnectionInfo(this.username, this.certificate, this.apiUrl);
         this.client.start();
-    }
-
-    public static void main(String[] args) {
-        ConduitClientAsyncTest cct = new ConduitClientAsyncTest();
-        cct.runConduitAsyncTests();
+        try {
+            this.client.join();
+        } catch (java.lang.Exception e) {
+            System.out.println("Something happened -- could not join the client thread!");
+            e.printStackTrace();
+        }
     }
 }

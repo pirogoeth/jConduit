@@ -39,7 +39,7 @@ public class ConduitClient {
 
     /**
      * Defaults constructor.
-     * 
+     *
      * @params none
      */
     private ConduitClient() {
@@ -48,7 +48,7 @@ public class ConduitClient {
 
     /**
      * Constructor for an unauthenticated conduit client.
-     * 
+     *
      * @params String apiURL
      */
     private ConduitClient(final String apiURL) {
